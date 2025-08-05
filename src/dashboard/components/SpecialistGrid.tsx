@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import SpecialistCard from './SpecialistCard';
+import SpecialistList from './SpecialistList';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Filter, SortAsc, Users } from 'lucide-react';
+import { Filter, SortAsc, Users, Grid3X3, List } from 'lucide-react';
 
 // Мокнутые данные для демонстрации
 const mockSpecialists = [
@@ -78,6 +79,7 @@ const mockSpecialists = [
 const SpecialistGrid = () => {
   const [sortBy, setSortBy] = useState('match');
   const [filterBy, setFilterBy] = useState('all');
+  const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards');
   
   const sortedSpecialists = [...mockSpecialists].sort((a, b) => {
     switch (sortBy) {
@@ -115,6 +117,28 @@ const SpecialistGrid = () => {
         </div>
 
         <div className="flex items-center space-x-3">
+          {/* Переключатель видов */}
+          <div className="flex items-center border border-border rounded-lg p-1">
+            <Button
+              variant={viewMode === 'cards' ? 'secondary' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('cards')}
+              className="px-3 py-1.5"
+            >
+              <Grid3X3 className="w-4 h-4 mr-1" />
+              Карточки
+            </Button>
+            <Button
+              variant={viewMode === 'list' ? 'secondary' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('list')}
+              className="px-3 py-1.5"
+            >
+              <List className="w-4 h-4 mr-1" />
+              Список
+            </Button>
+          </div>
+
           <div className="flex items-center space-x-2">
             <Filter className="w-4 h-4 text-muted-foreground" />
             <Select value={filterBy} onValueChange={setFilterBy}>
@@ -145,12 +169,16 @@ const SpecialistGrid = () => {
         </div>
       </div>
 
-      {/* Сетка специалистов */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredSpecialists.map((specialist) => (
-          <SpecialistCard key={specialist.id} specialist={specialist} />
-        ))}
-      </div>
+      {/* Контент в зависимости от выбранного вида */}
+      {viewMode === 'cards' ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredSpecialists.map((specialist) => (
+            <SpecialistCard key={specialist.id} specialist={specialist} />
+          ))}
+        </div>
+      ) : (
+        <SpecialistList specialists={filteredSpecialists} />
+      )}
 
       {filteredSpecialists.length === 0 && (
         <div className="text-center py-12">
