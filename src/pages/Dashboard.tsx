@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
+import { AppSidebar } from '@/components/AppSidebar';
 import Header from '@/dashboard/components/Header';
 import SpecialistGrid from '@/dashboard/components/SpecialistGrid';
 
@@ -17,18 +19,23 @@ const Dashboard = () => {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Подходящие кандидаты</h1>
-          <p className="text-muted-foreground">
-            Найдены специалисты, соответствующие вашим требованиям
-          </p>
-        </div>
-        <SpecialistGrid />
-      </main>
-    </div>
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <AppSidebar />
+        <SidebarInset>
+          <Header />
+          <main className="flex-1 px-6 py-8">
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold mb-2">Подходящие кандидаты</h1>
+              <p className="text-muted-foreground">
+                Найдены специалисты, соответствующие вашим требованиям
+              </p>
+            </div>
+            <SpecialistGrid />
+          </main>
+        </SidebarInset>
+      </div>
+    </SidebarProvider>
   );
 };
 
