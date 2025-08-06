@@ -24,10 +24,10 @@ const Dashboard = () => {
         <AppSidebar />
         <SidebarInset>
           <Header />
-          <main className="flex-1 px-6 py-8">
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold mb-2">Подходящие кандидаты</h1>
-              <p className="text-muted-foreground">
+          <main className="flex-1 px-3 py-4 sm:px-6 sm:py-8">
+            <div className="mb-6 sm:mb-8">
+              <h1 className="text-2xl sm:text-3xl font-bold mb-2">Подходящие кандидаты</h1>
+              <p className="text-muted-foreground text-sm sm:text-base">
                 Найдены специалисты, соответствующие вашим требованиям
               </p>
             </div>
