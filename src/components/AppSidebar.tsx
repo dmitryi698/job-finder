@@ -29,6 +29,7 @@ import {
   UserCog,
   Plus,
   Home,
+  Briefcase,
 } from 'lucide-react';
 
 const menuItems = [
@@ -41,6 +42,11 @@ const menuItems = [
     title: 'Дашборд',
     url: '/dashboard',
     icon: Users,
+  },
+  {
+    title: 'Вакансии',
+    url: '/jobs',
+    icon: Briefcase,
   },
 ];
 
