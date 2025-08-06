@@ -103,75 +103,80 @@ const SpecialistGrid = () => {
   return (
     <div className="space-y-6">
       {/* Фильтры и сортировка */}
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-        <div className="flex items-center space-x-4">
+      <div className="flex flex-col gap-4">
+        {/* Статистика */}
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 items-start sm:items-center">
           <div className="flex items-center space-x-2">
             <Users className="w-5 h-5 text-muted-foreground" />
             <span className="text-sm font-medium">
-              Найдено кандидатов: {filteredSpecialists.length}
+              Найдено: {filteredSpecialists.length}
             </span>
           </div>
-          <Badge variant="outline" className="text-xs">
+          <Badge variant="outline" className="text-xs w-fit">
             Среднее соответствие: {Math.round(filteredSpecialists.reduce((acc, s) => acc + s.matchPercentage, 0) / filteredSpecialists.length)}%
           </Badge>
         </div>
 
-        <div className="flex items-center space-x-3">
+        {/* Элементы управления */}
+        <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
           {/* Переключатель видов */}
-          <div className="flex items-center border border-border rounded-lg p-1">
+          <div className="flex items-center border border-border rounded-lg p-1 w-fit">
             <Button
               variant={viewMode === 'cards' ? 'secondary' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('cards')}
-              className="px-3 py-1.5"
+              className="px-2 sm:px-3 py-1.5 text-xs sm:text-sm"
             >
-              <Grid3X3 className="w-4 h-4 mr-1" />
-              Карточки
+              <Grid3X3 className="w-4 h-4 sm:mr-1" />
+              <span className="hidden sm:inline">Карточки</span>
             </Button>
             <Button
               variant={viewMode === 'list' ? 'secondary' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('list')}
-              className="px-3 py-1.5"
+              className="px-2 sm:px-3 py-1.5 text-xs sm:text-sm"
             >
-              <List className="w-4 h-4 mr-1" />
-              Список
+              <List className="w-4 h-4 sm:mr-1" />
+              <span className="hidden sm:inline">Список</span>
             </Button>
           </div>
 
-          <div className="flex items-center space-x-2">
-            <Filter className="w-4 h-4 text-muted-foreground" />
-            <Select value={filterBy} onValueChange={setFilterBy}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="Фильтр" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Все кандидаты</SelectItem>
-                <SelectItem value="available">Доступные</SelectItem>
-                <SelectItem value="high-match">Высокое соответствие</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          {/* Фильтры и сортировка */}
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+            <div className="flex items-center space-x-2">
+              <Filter className="w-4 h-4 text-muted-foreground" />
+              <Select value={filterBy} onValueChange={setFilterBy}>
+                <SelectTrigger className="w-full sm:w-40">
+                  <SelectValue placeholder="Фильтр" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Все кандидаты</SelectItem>
+                  <SelectItem value="available">Доступные</SelectItem>
+                  <SelectItem value="high-match">Высокое соответствие</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div className="flex items-center space-x-2">
-            <SortAsc className="w-4 h-4 text-muted-foreground" />
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="Сортировка" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="match">По соответствию</SelectItem>
-                <SelectItem value="rating">По рейтингу</SelectItem>
-                <SelectItem value="name">По имени</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex items-center space-x-2">
+              <SortAsc className="w-4 h-4 text-muted-foreground" />
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-full sm:w-40">
+                  <SelectValue placeholder="Сортировка" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="match">По соответствию</SelectItem>
+                  <SelectItem value="rating">По рейтингу</SelectItem>
+                  <SelectItem value="name">По имени</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Контент в зависимости от выбранного вида */}
       {viewMode === 'cards' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {filteredSpecialists.map((specialist) => (
             <SpecialistCard key={specialist.id} specialist={specialist} />
           ))}
