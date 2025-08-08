@@ -1,89 +1,9 @@
+import { useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MapPin, Calendar, DollarSign, Building2, Clock } from "lucide-react";
-
-interface Job {
-  id: string;
-  title: string;
-  company: string;
-  location: string;
-  salary: string;
-  type: string;
-  experience: string;
-  postedDate: string;
-  description: string;
-  requirements: string[];
-  technologies: string[];
-}
-
-const mockJobs: Job[] = [
-  {
-    id: "1",
-    title: "Senior Frontend Developer",
-    company: "TechCorp",
-    location: "Москва",
-    salary: "200 000 - 300 000 ₽",
-    type: "Полная занятость",
-    experience: "5+ лет",
-    postedDate: "2 дня назад",
-    description: "Ищем опытного фронтенд-разработчика для работы над современными веб-приложениями.",
-    requirements: ["React", "TypeScript", "Redux", "CSS-in-JS"],
-    technologies: ["React", "TypeScript", "Next.js", "Tailwind CSS"]
-  },
-  {
-    id: "2",
-    title: "Backend Developer",
-    company: "StartupXYZ",
-    location: "Санкт-Петербург",
-    salary: "150 000 - 220 000 ₽",
-    type: "Удаленно",
-    experience: "3+ года",
-    postedDate: "1 день назад",
-    description: "Разработка высоконагруженных бэкенд-сервисов для мобильного приложения.",
-    requirements: ["Node.js", "PostgreSQL", "Docker", "AWS"],
-    technologies: ["Node.js", "Express", "PostgreSQL", "Redis"]
-  },
-  {
-    id: "3",
-    title: "DevOps Engineer",
-    company: "CloudTech",
-    location: "Екатеринбург",
-    salary: "180 000 - 250 000 ₽",
-    type: "Гибрид",
-    experience: "4+ года",
-    postedDate: "3 дня назад",
-    description: "Построение и поддержка CI/CD пайплайнов, работа с облачной инфраструктурой.",
-    requirements: ["Kubernetes", "Docker", "AWS", "Terraform"],
-    technologies: ["Kubernetes", "Docker", "AWS", "Jenkins"]
-  },
-  {
-    id: "4",
-    title: "Full Stack Developer",
-    company: "DigitalAgency",
-    location: "Новосибирск",
-    salary: "120 000 - 180 000 ₽",
-    type: "Полная занятость",
-    experience: "2+ года",
-    postedDate: "5 дней назад",
-    description: "Разработка веб-приложений полного цикла для клиентов агентства.",
-    requirements: ["React", "Node.js", "MongoDB", "Git"],
-    technologies: ["React", "Node.js", "MongoDB", "Express"]
-  },
-  {
-    id: "5",
-    title: "Mobile Developer",
-    company: "MobileFirst",
-    location: "Казань",
-    salary: "160 000 - 230 000 ₽",
-    type: "Удаленно",
-    experience: "3+ года",
-    postedDate: "1 неделя назад",
-    description: "Разработка кроссплатформенного мобильного приложения.",
-    requirements: ["React Native", "JavaScript", "Redux", "Firebase"],
-    technologies: ["React Native", "TypeScript", "Redux", "Firebase"]
-  }
-];
+import { useJobsStore } from "@/store/useJobsStore";
 
 const getTypeColor = (type: string) => {
   switch (type) {
@@ -97,18 +17,40 @@ const getTypeColor = (type: string) => {
 };
 
 const Jobs = () => {
+  const { jobs, loading, error, fetchJobs } = useJobsStore();
+
+  useEffect(() => {
+    fetchJobs();
+  }, [fetchJobs]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex justify-center items-center">
+        <div className="text-muted-foreground">Загрузка вакансий...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background flex justify-center items-center">
+        <div className="text-destructive">{error}</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto p-6">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-2">Список вакансий</h1>
           <p className="text-muted-foreground">
-            Найдите идеальную работу среди {mockJobs.length} доступных вакансий
+            Найдите идеальную работу среди {jobs.length} доступных вакансий
           </p>
         </div>
 
         <div className="grid gap-6">
-          {mockJobs.map((job) => (
+          {jobs.map((job) => (
             <Card key={job.id} className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">

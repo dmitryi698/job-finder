@@ -6,19 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { MapPin, Calendar, Star, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
-interface Specialist {
-  id: string;
-  name: string;
-  title: string;
-  avatar?: string;
-  location: string;
-  experience: string;
-  matchPercentage: number;
-  skills: string[];
-  rating: number;
-  availability: 'available' | 'busy' | 'unavailable';
-}
+import { Specialist } from '@/store/useSpecialistsStore';
 
 interface SpecialistCardProps {
   specialist: Specialist;
@@ -29,28 +17,19 @@ const SpecialistCard: React.FC<SpecialistCardProps> = ({ specialist }) => {
 
   const getAvailabilityColor = (status: string) => {
     switch (status) {
-      case 'available':
+      case 'Готов к собеседованию':
         return 'bg-success';
-      case 'busy':
+      case 'Рассматривает предложения':
         return 'bg-warning';
-      case 'unavailable':
-        return 'bg-destructive';
+      case 'Активно ищет работу':
+        return 'bg-success';
       default:
         return 'bg-muted';
     }
   };
 
   const getAvailabilityText = (status: string) => {
-    switch (status) {
-      case 'available':
-        return 'Доступен';
-      case 'busy':
-        return 'Занят';
-      case 'unavailable':
-        return 'Недоступен';
-      default:
-        return 'Неизвестно';
-    }
+    return status;
   };
 
   const getMatchColor = (percentage: number) => {

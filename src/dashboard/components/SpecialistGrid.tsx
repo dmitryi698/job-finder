@@ -1,87 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SpecialistCard from './SpecialistCard';
 import SpecialistList from './SpecialistList';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Filter, SortAsc, Users, Grid3X3, List } from 'lucide-react';
-
-// Мокнутые данные для демонстрации
-const mockSpecialists = [
-  {
-    id: '1',
-    name: 'Анна Иванова',
-    title: 'Senior Python Developer',
-    location: 'Москва',
-    experience: '5+ лет',
-    matchPercentage: 95,
-    skills: ['Python', 'Django', 'PostgreSQL', 'Redis', 'Docker', 'AWS'],
-    rating: 4.8,
-    availability: 'available' as const,
-  },
-  {
-    id: '2',
-    name: 'Дмитрий Петров',
-    title: 'Full Stack Python Developer',
-    location: 'Санкт-Петербург',
-    experience: '4+ лет',
-    matchPercentage: 88,
-    skills: ['Python', 'FastAPI', 'React', 'PostgreSQL', 'Docker'],
-    rating: 4.6,
-    availability: 'busy' as const,
-  },
-  {
-    id: '3',
-    name: 'Мария Сидорова',
-    title: 'Backend Python Developer',
-    location: 'Екатеринбург',
-    experience: '3+ лет',
-    matchPercentage: 82,
-    skills: ['Python', 'Django', 'REST API', 'MySQL', 'Redis'],
-    rating: 4.5,
-    availability: 'available' as const,
-  },
-  {
-    id: '4',
-    name: 'Алексей Козлов',
-    title: 'Python Developer',
-    location: 'Новосибирск',
-    experience: '6+ лет',
-    matchPercentage: 91,
-    skills: ['Python', 'Flask', 'PostgreSQL', 'Celery', 'Docker', 'Kubernetes'],
-    rating: 4.7,
-    availability: 'available' as const,
-  },
-  {
-    id: '5',
-    name: 'Елена Морозова',
-    title: 'Senior Backend Developer',
-    location: 'Казань',
-    experience: '7+ лет',
-    matchPercentage: 89,
-    skills: ['Python', 'Django', 'FastAPI', 'PostgreSQL', 'Redis', 'AWS'],
-    rating: 4.9,
-    availability: 'unavailable' as const,
-  },
-  {
-    id: '6',
-    name: 'Владимир Николаев',
-    title: 'Python Software Engineer',
-    location: 'Ростов-на-Дону',
-    experience: '4+ лет',
-    matchPercentage: 78,
-    skills: ['Python', 'Django', 'PostgreSQL', 'Docker'],
-    rating: 4.4,
-    availability: 'available' as const,
-  },
-];
+import { useSpecialistsStore } from '@/store/useSpecialistsStore';
 
 const SpecialistGrid = () => {
+  const { specialists, loading, error, fetchSpecialists } = useSpecialistsStore();
   const [sortBy, setSortBy] = useState('match');
   const [filterBy, setFilterBy] = useState('all');
   const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards');
+
+  useEffect(() => {
+    fetchSpecialists();
+  }, [fetchSpecialists]);
   
-  const sortedSpecialists = [...mockSpecialists].sort((a, b) => {
+  const sortedSpecialists = [...specialists].sort((a, b) => {
     switch (sortBy) {
       case 'match':
         return b.matchPercentage - a.matchPercentage;
@@ -95,10 +31,26 @@ const SpecialistGrid = () => {
   });
 
   const filteredSpecialists = sortedSpecialists.filter(specialist => {
-    if (filterBy === 'available') return specialist.availability === 'available';
+    if (filterBy === 'available') return specialist.availability === 'Готов к собеседованию';
     if (filterBy === 'high-match') return specialist.matchPercentage >= 85;
     return true;
   });
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-muted-foreground">Загрузка специалистов...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-destructive">{error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

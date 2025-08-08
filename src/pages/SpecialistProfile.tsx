@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
+import { useSpecialistsStore } from '@/store/useSpecialistsStore';
 import { 
   ArrowLeft, 
   MapPin, 
@@ -132,9 +133,28 @@ const mockSpecialist: SpecialistData = {
 const SpecialistProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { specialists, fetchSpecialists, getSpecialistById } = useSpecialistsStore();
   
-  // In real app, fetch specialist data by id
-  const specialist = mockSpecialist;
+  useEffect(() => {
+    if (specialists.length === 0) {
+      fetchSpecialists();
+    }
+  }, [specialists.length, fetchSpecialists]);
+  
+  const specialist = id ? getSpecialistById(id) : null;
+
+  if (!specialist) {
+    return (
+      <SidebarProvider>
+        <div className="flex h-screen w-full">
+          <AppSidebar />
+          <div className="flex-1 flex justify-center items-center">
+            <div className="text-muted-foreground">Специалист не найден</div>
+          </div>
+        </div>
+      </SidebarProvider>
+    );
+  }
 
   const getAvailabilityColor = (status: string) => {
     switch (status) {
@@ -225,7 +245,10 @@ const SpecialistProfile: React.FC = () => {
                             </div>
                           </div>
 
-                          <p className="text-muted-foreground leading-relaxed">{specialist.summary}</p>
+                           <p className="text-muted-foreground leading-relaxed">
+                             Опытный разработчик с {specialist.experience} опыта в области {specialist.title}. 
+                             Специализируется на современных технологиях и имеет высокий рейтинг среди коллег.
+                           </p>
                         </div>
 
                         {/* Match Score */}
@@ -277,19 +300,19 @@ const SpecialistProfile: React.FC = () => {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      {specialist.workHistory.map((job, index) => (
-                        <div key={index}>
-                          <div className="flex justify-between items-start mb-2">
-                            <div>
-                              <h4 className="font-semibold">{job.position}</h4>
-                              <p className="text-muted-foreground">{job.company}</p>
-                            </div>
-                            <span className="text-sm text-muted-foreground">{job.period}</span>
+                      <div>
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <h4 className="font-semibold">{specialist.title}</h4>
+                            <p className="text-muted-foreground">{specialist.company}</p>
                           </div>
-                          <p className="text-sm">{job.description}</p>
-                          {index < specialist.workHistory.length - 1 && <Separator className="mt-4" />}
+                          <span className="text-sm text-muted-foreground">{specialist.experience}</span>
                         </div>
-                      ))}
+                        <p className="text-sm">
+                          Разработка и поддержка веб-приложений с использованием современных технологий. 
+                          Участие в проектировании архитектуры и код-ревью.
+                        </p>
+                      </div>
                     </CardContent>
                   </Card>
 
@@ -305,8 +328,8 @@ const SpecialistProfile: React.FC = () => {
                       {specialist.projects.map((project, index) => (
                         <div key={index}>
                           <div className="flex justify-between items-start mb-2">
-                            <h4 className="font-semibold">{project.name}</h4>
-                            <span className="text-sm text-muted-foreground">{project.duration}</span>
+                            <h4 className="font-semibold">{project.title}</h4>
+                            <span className="text-sm text-muted-foreground">6 месяцев</span>
                           </div>
                           <p className="text-sm text-muted-foreground mb-2">{project.description}</p>
                           <div className="flex flex-wrap gap-1">
@@ -358,7 +381,7 @@ const SpecialistProfile: React.FC = () => {
                       {specialist.education.map((edu, index) => (
                         <div key={index}>
                           <h4 className="font-medium text-sm">{edu.degree}</h4>
-                          <p className="text-sm text-muted-foreground">{edu.institution}</p>
+                          <p className="text-sm text-muted-foreground">{edu.university}</p>
                           <p className="text-xs text-muted-foreground">{edu.year}</p>
                           {index < specialist.education.length - 1 && <Separator className="mt-3" />}
                         </div>
@@ -376,11 +399,12 @@ const SpecialistProfile: React.FC = () => {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-2">
-                        {specialist.certifications.map((cert, index) => (
-                          <Badge key={index} variant="outline" className="block text-center py-2">
-                            {cert}
-                          </Badge>
-                        ))}
+                        <Badge variant="outline" className="block text-center py-2">
+                          AWS Certified Developer
+                        </Badge>
+                        <Badge variant="outline" className="block text-center py-2">
+                          React Professional Certificate
+                        </Badge>
                       </div>
                     </CardContent>
                   </Card>
@@ -391,12 +415,14 @@ const SpecialistProfile: React.FC = () => {
                       <CardTitle>Языки</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-2">
-                      {specialist.languages.map((lang, index) => (
-                        <div key={index} className="flex justify-between">
-                          <span className="text-sm">{lang.language}</span>
-                          <span className="text-sm text-muted-foreground">{lang.level}</span>
-                        </div>
-                      ))}
+                      <div className="flex justify-between">
+                        <span className="text-sm">Русский</span>
+                        <span className="text-sm text-muted-foreground">Родной</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm">Английский</span>
+                        <span className="text-sm text-muted-foreground">Свободный</span>
+                      </div>
                     </CardContent>
                   </Card>
                 </div>
